@@ -1,0 +1,105 @@
+# silent — a three-state check runner
+
+A check that can only say **pass** or **fail** will, sooner or later, say **pass**
+while it never actually looked. That is a *silent failure*: the report is clean and
+the thing it guards is broken.
+
+This runner gives every check a third answer, and makes the third answer an exit
+code instead of a footnote:
+
+| exit | meaning |
+|---|---|
+| 0 | every check passed |
+| 1 | at least one check failed |
+| 3 | nothing failed, but at least one check **could not see** |
+| 2 | the runner itself was misused (bad file, no checks, `--only` matched nothing) |
+
+`3` is the whole point. In CI, `3` should fail the job (or page someone), but it must
+not be confused with `1`: "I saw a problem" and "I could not look" need different
+responses, and flattening them is how monitors rot.
+
+## Origin (and prior art)
+
+I built this while auditing my own scripts: a backup verifier that compared a file
+against a hash the same process had just written, a linter that searched a pattern
+that never occurs in the file it linted. Both reported success.
+
+The three-state idea is not mine. It is stated independently in several places,
+including [`medici-finance/assay` · three-state-instrument-rule](https://github.com/medici-finance/assay/blob/f9327a5954d57e786464e244a8e9c06f695d980d/docs/three-state-instrument-rule.md)
+(and in agent-protocol issue threads such as `TheAxioma/agent-collab-protocol#139`).
+What this repo adds is mechanical: the third state is an exit code, every check is
+expected to ship with a fixture proving it can go red, and a *pinned-red* list
+records which checks must be red right now, so a silently fixed "red" cannot
+disappear.
+
+## Install
+
+No dependencies, Python 3.9+.
+
+```bash
+git clone https://github.com/xiaoyelab/silent
+cd silent
+python3 test_silent.py     # the runner's own tests
+```
+
+## Use
+
+Write a check file (any file exposing functions decorated with `@check`):
+
+```python
+# checks_acme.py
+from silent import check, UNKNOWN
+
+@check("filters-echoed", "the search endpoint must echo the filters it applied")
+def _():
+    r = get("/v1/search?q=zzzz")
+    if r.status == 503:
+        return UNKNOWN, "upstream 503 — this check could not look"
+    return bool(r.json.get("filters_applied")), f"filters_applied={r.json.get('filters_applied')!r}"
+```
+
+Then:
+
+```bash
+python3 silent.py run checks_acme.py          # human output, exit 0/1/3/2
+python3 silent.py run checks_acme.py --json   # machine output
+python3 silent.py run checks_acme.py --strict # treat UNKNOWN as failure
+python3 silent.py pin  checks_acme.py         # record the names that must be red now
+```
+
+`pins.json` is a list of check names that are *expected* to be red at the moment.
+If one of them stops being red, the runner reports it as `MISS` — the check may have
+been silently disabled, or the bug may be fixed and the pin stale; either way a human
+has to say which.
+
+## Positive control
+
+A check that has never shown red is not evidence of anything. Every `checks_*.py` in
+this repo is expected to have a `test_*.py` that feeds it a knowingly broken input and
+asserts it goes red — `test_fixture_leg.py` and `test_checks_*.py` are examples.
+`test_fixture_leg.py` also enforces that every `checks_*.py` ships such a test.
+
+## Cases
+
+`CASES.md` collects five real, reproducible silent-failure cases from my own machine
+(backup self-attesting hashes, a linter matching a pattern that never occurs, a
+"clean" diff over empty input, …). Each has reproduction commands, the criterion that
+separates "nothing to report" from "could not see", and an evidence grade.
+
+## Limits (please read)
+
+- The pin ledger and the declaration history are **ordinary files**. They make
+  tampering visible to a careful reader; they are not cryptographic proof. If you
+  need that, sign the ledger with a key the runner does not hold.
+- The runner does not decide whether your check is *meaningful*. It only refuses to
+  let "could not see" masquerade as "clean".
+- Checks run with your privileges, in your environment. Nothing here is sandboxed.
+
+## Chinese
+
+代码注释与 `CASES.md` 是中文。三态的理由一句话：**一条读不到输入的检查，只能二选一的话，
+选「通过」就是骗人，选「失败」就是狼来了，而狼来了会教人关掉检查。**
+
+## License
+
+MIT — see `LICENSE`.

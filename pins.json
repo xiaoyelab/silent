@@ -1,0 +1,58 @@
+{
+  "test_checks_aideprecations.py": {
+    "at": "2026-11-17 15:03",
+    "dir": "aideprecations",
+    "note": "",
+    "pinned": [
+      "counts-reconcile",
+      "unread-sources-visible",
+      "provider-unique",
+      "carried-rows-honest"
+    ]
+  },
+  "test_checks_continuity.py": {
+    "at": "2026-11-17 15:03",
+    "dir": "silent",
+    "note": "",
+    "pinned": [
+      "readable",
+      "contiguous",
+      "fresh"
+    ]
+  },
+  "test_checks_duami.py": {
+    "at": "2026-11-17 15:03",
+    "dir": "silent",
+    "note": "",
+    "pinned": [
+      "contract 能红：live 但 10 分钟没心跳",
+      "totals 能红：五档加起来 3 ≠ total 4",
+      "burst 能红：三张卡同一分钟冻结"
+    ]
+  },
+  "test_checks_scrapling.py": {
+    "at": "2026-11-17 15:03",
+    "dir": "scraplingdata",
+    "note": "",
+    "pinned": [
+      "counts-consistent",
+      "fill-rate-denominator",
+      "blocked-cohort",
+      "query-three-state",
+      "payment-ask-channel",
+      "data-freshness"
+    ]
+  },
+  "test_checks_site.py": {
+    "at": "2026-11-17 15:03",
+    "dir": "silent",
+    "note": "",
+    "pinned": [
+      "assets 缺资源要红",
+      "feed 比文章少要红",
+      "page-per-post 缺页要红",
+      "未来日期要红",
+      "发布的副本不一致要红"
+    ]
+  }
+}
