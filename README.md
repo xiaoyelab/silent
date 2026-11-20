@@ -99,6 +99,14 @@ scanner's own test (`test_fixture_scan.py`) proves it goes red when a fixture is
 "clean" diff over empty input, …). Each has reproduction commands, the criterion that
 separates "nothing to report" from "could not see", and an evidence grade.
 
+Two of them (cases 4 and 5) also ship as **self-contained runnable reproductions**
+under `cases/`: `python3 cases/case4_self_attesting/demo.py` builds a half-written
+snapshot whose hash verifies, and `python3 cases/case5_never_matches/demo.py` shows a
+checker matching a pattern that cannot occur and reporting "clean". Their demos exit
+**0 when the defect reproduces**, which is the opposite of the runner's convention on
+purpose — and `cases/test_cases.py` includes the negative control (fix the setup, the
+reproduction must stop reproducing).
+
 ## Limits (please read)
 
 - The pin ledger and the declaration history are **ordinary files**. They make
