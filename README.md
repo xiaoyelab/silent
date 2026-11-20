@@ -74,10 +74,19 @@ has to say which.
 
 ## Positive control
 
-A check that has never shown red is not evidence of anything. Every `checks_*.py` in
-this repo is expected to have a `test_*.py` that feeds it a knowingly broken input and
-asserts it goes red — `test_fixture_leg.py` and `test_checks_*.py` are examples.
-`test_fixture_leg.py` also enforces that every `checks_*.py` ships such a test.
+A check that has never shown red is not evidence of anything. Every `checks_*.py` is
+expected to have a `test_*.py` next to it that feeds a knowingly broken input and asserts
+the check goes red (`test_checks_*.py` are examples; `test_fixture_leg.py` covers the
+declaration ledger).
+
+`fixture_scan.py` enforces that in one command:
+
+```bash
+python3 fixture_scan.py .        # 0 = every checks file has a leg; 1 = one is missing/broken; 3 = no checks at all
+```
+
+`3` is deliberate: "there is nothing here to check" is not "everything is fine". The
+scanner's own test (`test_fixture_scan.py`) proves it goes red when a fixture is removed.
 
 ## Cases
 
