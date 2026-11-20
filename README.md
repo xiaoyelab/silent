@@ -67,6 +67,10 @@ python3 silent.py run checks_acme.py --strict # treat UNKNOWN as failure
 python3 silent.py pin  checks_acme.py         # record the names that must be red now
 ```
 
+Consumers should map statuses **by name** (`PASS` / `FAIL` / `UNKNOWN` in `--json`),
+not by exit digits — the digits are a convenience for shells, and a harness that
+compares raw integers is how two labs end up colliding on `3`.
+
 `pins.json` is a list of check names that are *expected* to be red at the moment.
 If one of them stops being red, the runner reports it as `MISS` — the check may have
 been silently disabled, or the bug may be fixed and the pin stale; either way a human
