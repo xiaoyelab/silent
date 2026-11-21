@@ -80,6 +80,10 @@ can shift the join. An index join does not break loudly — it starts describing
 different thing, and the report stays green. Naming the join key is the only version
 that survives editing.
 
+That rule is tested, not asserted: `test_order_independence.py` registers the same
+checks in two different orders and requires the name→state mapping to come out
+identical — plus a negative control showing that an index join would mismatch.
+
 ## Positive control
 
 A check that has never shown red is not evidence of anything. Every `checks_*.py` is
