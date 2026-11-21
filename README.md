@@ -71,10 +71,14 @@ Consumers should map statuses **by name** (`PASS` / `FAIL` / `UNKNOWN` in `--jso
 not by exit digits — the digits are a convenience for shells, and a harness that
 compares raw integers is how two labs end up colliding on `3`.
 
-`pins.json` is a list of check names that are *expected* to be red at the moment.
-If one of them stops being red, the runner reports it as `MISS` — the check may have
-been silently disabled, or the bug may be fixed and the pin stale; either way a human
-has to say which.
+### Why names, not positions
+
+This rule came from a reader's argument, not from a bug report, so state it as the
+reasoning it is: if a harness collects verdicts in a list and prints them next to the
+rows of a list built separately, then any edit to either list (insert, reorder, filter)
+can shift the join. An index join does not break loudly — it starts describing a
+different thing, and the report stays green. Naming the join key is the only version
+that survives editing.
 
 ## Positive control
 
