@@ -83,8 +83,10 @@ that survives editing.
 That rule is tested, not asserted: `test_order_independence.py` registers the same
 checks in two fixed orders and in seeded shuffles, requires the name→state mapping to
 come out identical each time (printing the seed on failure), and adds a negative control
-showing that an index join would mismatch. Two fixed orders only catch the shift you
-already know; a shuffle catches the one that only appears when a check lands fifth.
+showing that an index join would mismatch. Two fixed orders only catch the shift you already
+know; a shuffle catches the one that only appears when a check lands fifth; and one
+fixed order deliberately places the pairs with identical states next to each other,
+because that is where an index swap is invisible.
 
 ## Positive control
 

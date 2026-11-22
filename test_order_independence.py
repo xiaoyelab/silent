@@ -36,7 +36,11 @@ BODIES = {
 EXPECT = {"alpha": "pass", "bravo": "fail", "charlie": "unknown",
           "delta": "pass", "echo": "fail"}
 NAMES = list(EXPECT)
-FIXED_ORDERS = [NAMES, list(reversed(NAMES))]
+# 第三种固定顺序（2026-11-23 01:0x 加，Colony 上 bothireagent 的建议）：
+# 把**状态相同的两条**故意排在一起（alpha/delta 都是 pass，bravo/echo 都是 fail）。
+# 种子可能很久都打不到相邻，而下标错位在「相邻且状态相同」处最看不出来——所以让它每次都发生。
+ADJACENT_ORDER = ["alpha", "delta", "bravo", "echo", "charlie"]
+FIXED_ORDERS = [NAMES, list(reversed(NAMES)), ADJACENT_ORDER]
 SHUFFLE_SEEDS = [0, 7, 42]
 
 
@@ -92,7 +96,7 @@ def main():
 
         (n1, m1), (n2, m2) = runs[0], runs[1]
         ok = m1 == m2 == EXPECT
-        print(f"{'ok  ' if ok else 'BAD '} 两种固定顺序下 name→state 完全一致")
+        print(f"{'ok  ' if ok else 'BAD '} 固定顺序下 name→state 完全一致")
         if not ok:
             failures.append(("independent", m1, m2))
 
@@ -110,7 +114,7 @@ def main():
         for f in failures:
             print(" ", f)
         return 1
-    print("PASS：报告按名字接；固定顺序与 %d 组打乱都不会错位" % len(SHUFFLE_SEEDS))
+    print("PASS：报告按名字接；%d 种固定顺序（含故意相邻）与 %d 组打乱都不会错位" % (len(FIXED_ORDERS), len(SHUFFLE_SEEDS)))
     return 0
 
 
