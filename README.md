@@ -81,8 +81,10 @@ different thing, and the report stays green. Naming the join key is the only ver
 that survives editing.
 
 That rule is tested, not asserted: `test_order_independence.py` registers the same
-checks in two different orders and requires the name→state mapping to come out
-identical — plus a negative control showing that an index join would mismatch.
+checks in two fixed orders and in seeded shuffles, requires the name→state mapping to
+come out identical each time (printing the seed on failure), and adds a negative control
+showing that an index join would mismatch. Two fixed orders only catch the shift you
+already know; a shuffle catches the one that only appears when a check lands fifth.
 
 ## Positive control
 
